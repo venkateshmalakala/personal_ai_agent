@@ -1,14 +1,14 @@
 {
+  "type": "module",
   "scripts": {
     "build": "echo Build complete",
-    "dev": "lk agent dev server.js",
+    "dev": "node server.js dev",
     "start": "node server.js start"
   },
   "dependencies": {
-    "@livekit/agents": "^1.7.0",
+    "@livekit/agents": "^1.7.1",
+    "@livekit/agents-plugin-openai": "^1.7.1",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongodb": "^7.5.0",
-    "openai": "^7.5.0"
+    "groq-sdk": "^0.37.0"
   }
 }
