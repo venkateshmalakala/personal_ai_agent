@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal AI Voice Assistant</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1rem; }
+    button { font: inherit; padding: .7rem 1rem; cursor: pointer; }
+    #status { margin-top: 1rem; min-height: 1.5rem; }
+    .connected { color: #087f5b; }
+    .error { color: #c92a2a; }
+  </style>
+</head>
+<body>
+  <h1>Personal AI Voice Assistant</h1>
+  <p>Join a LiveKit room and allow microphone access to begin.</p>
+  <button id="connect">Connect microphone</button>
+  <button id="disconnect" disabled>Disconnect</button>
+  <p id="status" role="status">Disconnected</p>
+  <section aria-live="polite">
+    <h2>Conversation</h2>
+    <div id="transcript"><p>No speech detected yet.</p></div>
+  </section>
+  <script type="module" src="/client.js"></script>
+</body>
+</html>
