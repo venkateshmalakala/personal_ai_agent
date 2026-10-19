@@ -7,6 +7,7 @@
   <style>
     body { font: 16px system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1rem; }
     button { font: inherit; padding: .7rem 1rem; cursor: pointer; }
+    input, textarea { box-sizing: border-box; display: block; font: inherit; margin: .5rem 0 1rem; padding: .6rem; width: 100%; }
     #status { margin-top: 1rem; min-height: 1.5rem; }
     .connected { color: #087f5b; }
     .error { color: #c92a2a; }
@@ -15,6 +16,14 @@
 <body>
   <h1>Personal AI Voice Assistant</h1>
   <p>Join a LiveKit room and allow microphone access to begin.</p>
+  <section aria-labelledby="outboundCallHeading">
+    <h2 id="outboundCallHeading">Outbound call</h2>
+    <label for="phoneNumber">Phone number</label>
+    <input id="phoneNumber" type="tel" autocomplete="tel" placeholder="+15551234567" required>
+    <label for="callContext">Call context</label>
+    <textarea id="callContext" rows="4" placeholder="What should the assistant know about this call?"></textarea>
+    <button id="startCallBtn" type="button">Make Call</button>
+  </section>
   <button id="connect">Connect microphone</button>
   <button id="disconnect" disabled>Disconnect</button>
   <p id="status" role="status">Disconnected</p>

@@ -15,6 +15,11 @@ export const env = {
   GROQ_API_KEY: process.env.GROQ_API_KEY,
   DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
   CARTESIA_API_KEY: process.env.CARTESIA_API_KEY,
+  PLIVO_AUTH_ID: process.env.PLIVO_AUTH_ID,
+  PLIVO_AUTH_TOKEN: process.env.PLIVO_AUTH_TOKEN,
+  PLIVO_PHONE_NUMBER: process.env.PLIVO_PHONE_NUMBER,
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL,
+  LIVEKIT_SIP_DOMAIN: process.env.LIVEKIT_SIP_DOMAIN,
 };
 
 export function assertRequiredEnv(keys) {

@@ -2,6 +2,9 @@ import { Room, RoomEvent, Track } from "https://cdn.jsdelivr.net/npm/livekit-cli
 
 const connectButton = document.querySelector("#connect");
 const disconnectButton = document.querySelector("#disconnect");
+const startCallButton = document.querySelector("#startCallBtn");
+const phoneNumberInput = document.querySelector("#phoneNumber");
+const callContextInput = document.querySelector("#callContext");
 const status = document.querySelector("#status");
 const transcript = document.querySelector("#transcript");
 const transcriptLines = new Map();
@@ -85,3 +88,26 @@ connectButton.addEventListener("click", async () => {
 });
 
 disconnectButton.addEventListener("click", () => room.disconnect());
+
+startCallButton.addEventListener("click", async () => {
+  startCallButton.disabled = true;
+
+  try {
+    const response = await fetch("/api/make-call", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        phoneNumber: phoneNumberInput.value,
+        context: callContextInput.value,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Call request failed");
+
+    alert(`Call started. Room: ${data.roomName}`);
+  } catch (error) {
+    alert(`Unable to start call: ${error.message}`);
+  } finally {
+    startCallButton.disabled = false;
+  }
+});
