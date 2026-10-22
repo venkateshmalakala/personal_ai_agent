@@ -3,34 +3,196 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b16">
   <title>Personal AI Voice Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: "#070b16",
+            panel: "#0e1424",
+          },
+          boxShadow: {
+            glow: "0 0 28px rgba(99,102,241,.2)",
+          },
+        },
+      },
+    };
+  </script>
   <style>
-    body { font: 16px system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1rem; }
-    button { font: inherit; padding: .7rem 1rem; cursor: pointer; }
-    input, textarea { box-sizing: border-box; display: block; font: inherit; margin: .5rem 0 1rem; padding: .6rem; width: 100%; }
-    #status { margin-top: 1rem; min-height: 1.5rem; }
-    .connected { color: #087f5b; }
-    .error { color: #c92a2a; }
+    :root { color-scheme: dark; }
+    body {
+      background:
+        radial-gradient(ellipse at 10% 0%, rgba(79, 70, 229, .18), transparent 34rem),
+        radial-gradient(ellipse at 92% 18%, rgba(16, 185, 129, .1), transparent 28rem),
+        #070b16;
+    }
+    .glass { background: rgba(14, 20, 36, .78); backdrop-filter: blur(18px); }
+    .transcript-scroll { scrollbar-color: #334155 transparent; scrollbar-width: thin; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
   </style>
 </head>
-<body>
-  <h1>Personal AI Voice Assistant</h1>
-  <p>Join a LiveKit room and allow microphone access to begin.</p>
-  <section aria-labelledby="outboundCallHeading">
-    <h2 id="outboundCallHeading">Outbound call</h2>
-    <label for="phoneNumber">Phone number</label>
-    <input id="phoneNumber" type="tel" autocomplete="tel" placeholder="+15551234567" required>
-    <label for="callContext">Call context</label>
-    <textarea id="callContext" rows="4" placeholder="What should the assistant know about this call?"></textarea>
-    <button id="startCallBtn" type="button">Make Call</button>
-  </section>
-  <button id="connect">Connect microphone</button>
-  <button id="disconnect" disabled>Disconnect</button>
-  <p id="status" role="status">Disconnected</p>
-  <section aria-live="polite">
-    <h2>Conversation</h2>
-    <div id="transcript"><p>No speech detected yet.</p></div>
-  </section>
+<body class="min-h-screen text-slate-100 antialiased selection:bg-indigo-400/30">
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+    <header class="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-4">
+        <div class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-emerald-400 shadow-glow">
+          <svg aria-hidden="true" class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.36-6.36-2.12 2.12m-8.48 8.48-2.12 2.12m12.72 0-2.12-2.12m-8.48-8.48L5.64 5.64" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[.25em] text-indigo-300">Voice operations</p>
+          <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Personal AI <span class="text-slate-400">Assistant</span></h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 self-start rounded-full border border-slate-700/80 bg-slate-900/70 px-3 py-2 text-xs text-slate-300 sm:self-auto">
+        <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
+        Voice system dashboard
+      </div>
+    </header>
+
+    <section class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Call overview">
+      <article class="glass rounded-2xl border border-slate-800 p-5 shadow-xl shadow-black/10">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium text-slate-400">Call status</h2>
+          <span id="callStatusIcon" class="grid h-9 w-9 place-items-center rounded-xl bg-slate-800 text-slate-300">
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-3 2a15 15 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2C10 21 3 14 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <span id="callStatusDot" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+          <p id="callStatusValue" class="text-2xl font-semibold tracking-tight">Idle</p>
+        </div>
+        <p id="callStatusMessage" class="mt-2 text-sm text-slate-500">Ready when you are.</p>
+      </article>
+
+      <article class="glass rounded-2xl border border-slate-800 p-5 shadow-xl shadow-black/10">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium text-slate-400">Answered</h2>
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300">
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="mt-4">
+          <span id="answeredBadge" class="inline-flex items-center rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-sm font-semibold text-slate-300">No</span>
+        </div>
+        <p class="mt-3 text-sm text-slate-500">Updates when the call is answered.</p>
+      </article>
+
+      <article class="glass rounded-2xl border border-slate-800 p-5 shadow-xl shadow-black/10">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium text-slate-400">Call duration</h2>
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-violet-400/10 text-violet-300">
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="1.7"/><path d="M12 9v4l3 2M9 3h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <p id="callDuration" class="mt-4 font-mono text-3xl font-semibold tracking-wider tabular-nums">00:00</p>
+        <p class="mt-2 text-sm text-slate-500">Starts when Plivo answers.</p>
+      </article>
+
+      <article class="glass rounded-2xl border border-slate-800 p-5 shadow-xl shadow-black/10">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium text-slate-400">Active request ID</h2>
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-indigo-400/10 text-indigo-300">
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M8 8h12v12H8zM4 16V4h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <p id="requestId" class="mt-4 truncate font-mono text-sm text-slate-200" title="No active request">—</p>
+        <p class="mt-2 text-sm text-slate-500">Plivo request UUID</p>
+      </article>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+      <div class="glass rounded-3xl border border-slate-800 p-5 shadow-2xl shadow-black/20 sm:p-7">
+        <div class="mb-6">
+          <p class="text-xs font-semibold uppercase tracking-[.22em] text-emerald-300">Outbound calling</p>
+          <h2 class="mt-2 text-xl font-semibold">Start a conversation</h2>
+          <p class="mt-1 text-sm leading-6 text-slate-400">Enter an E.164 phone number and optional context for your assistant.</p>
+        </div>
+        <form id="callForm" class="space-y-5">
+          <div>
+            <label for="phoneNumber" class="mb-2 block text-sm font-medium text-slate-300">Phone number</label>
+            <input id="phoneNumber" type="tel" autocomplete="tel" placeholder="+15551234567" required
+              class="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3.5 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10">
+            <p class="mt-2 text-xs text-slate-500">Include country code, for example +1 555 123 4567.</p>
+          </div>
+          <div>
+            <label for="callContext" class="mb-2 block text-sm font-medium text-slate-300">Call context <span class="font-normal text-slate-500">· optional</span></label>
+            <textarea id="callContext" rows="4" maxlength="4000" placeholder="What should the assistant know about this call?"
+              class="w-full resize-y rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3.5 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"></textarea>
+          </div>
+          <button id="startCallBtn" type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-500 px-5 py-3.5 font-semibold text-white shadow-lg shadow-indigo-950/40 transition hover:-translate-y-0.5 hover:shadow-indigo-500/25 disabled:translate-y-0 disabled:shadow-none">
+            <svg aria-hidden="true" class="h-5 w-5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-3 2a15 15 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2C10 21 3 14 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            <span id="startCallLabel">Make a call</span>
+          </button>
+          <p id="callFormMessage" class="hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="mt-7 border-t border-slate-800 pt-5">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200">Browser voice test</h3>
+              <p id="status" class="mt-1 text-xs text-slate-500" role="status">Disconnected</p>
+            </div>
+            <div class="flex gap-2">
+              <button id="connect" type="button" class="rounded-lg border border-slate-700 bg-slate-800/70 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-emerald-400/50 hover:bg-emerald-400/10">Connect mic</button>
+              <button id="disconnect" type="button" disabled class="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-rose-400/50 hover:text-rose-300">Disconnect</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <section class="glass rounded-3xl border border-emerald-400/20 p-5 shadow-2xl shadow-emerald-950/10 sm:p-7" aria-labelledby="callResultHeading">
+          <div class="mb-4">
+            <p class="text-xs font-semibold uppercase tracking-[.22em] text-emerald-300">After the call</p>
+            <h2 id="callResultHeading" class="mt-2 text-lg font-semibold">Assistant response</h2>
+          </div>
+          <p id="callResult" class="hidden whitespace-pre-wrap rounded-2xl border border-slate-800 bg-slate-950/80 p-4 text-sm leading-7 text-slate-200" aria-live="polite"></p>
+          <p id="callResultPlaceholder" class="text-sm text-slate-500">Your assistant’s final text response will appear here after the call ends.</p>
+        </section>
+
+        <section class="glass rounded-3xl border border-slate-800 p-5 shadow-2xl shadow-black/20 sm:p-7" aria-labelledby="responseHeading">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[.22em] text-indigo-300">Request details</p>
+              <h2 id="responseHeading" class="mt-2 text-lg font-semibold">Server response</h2>
+            </div>
+            <span class="rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-400">LIVE</span>
+          </div>
+          <pre id="serverResponse" class="transcript-scroll min-h-28 max-h-52 overflow-auto rounded-2xl border border-slate-800 bg-slate-950/80 p-4 font-mono text-xs leading-6 text-indigo-200 whitespace-pre-wrap break-words" aria-live="polite">No call request yet.</pre>
+          <div class="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            <span class="h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+            Call request and webhook updates appear here.
+          </div>
+        </section>
+
+        <section class="glass rounded-3xl border border-slate-800 p-5 shadow-2xl shadow-black/20 sm:p-7" aria-labelledby="transcriptHeading">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[.22em] text-violet-300">Live audio stream</p>
+              <h2 id="transcriptHeading" class="mt-2 text-lg font-semibold">Conversation transcript</h2>
+            </div>
+            <span class="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-[11px] text-slate-400">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Text only
+            </span>
+          </div>
+          <div id="transcript" class="transcript-scroll h-64 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950/80 p-4 font-mono text-xs leading-6 text-emerald-200 sm:h-72" aria-live="polite">
+            <p class="text-slate-600">Waiting for conversation text…</p>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">Text transcript only. Call audio is not played in this dashboard.</p>
+        </section>
+      </div>
+    </section>
+    <footer class="mt-8 flex flex-col gap-2 border-t border-slate-800/70 pt-5 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+      <span>Personal AI Voice Assistant</span>
+      <span>Private voice operations · LiveKit + Plivo</span>
+    </footer>
+  </main>
   <script type="module" src="/client.js"></script>
 </body>
 </html>

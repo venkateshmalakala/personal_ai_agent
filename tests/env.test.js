@@ -17,9 +17,13 @@ test("required environment variables are enforced", () => {
   env.GROQ_API_KEY = "";
   assert.throws(() => assertRequiredEnv(["GROQ_API_KEY"]), /Missing required environment variables/);
   env.GROQ_API_KEY = original;
+
+  assert.doesNotThrow(() => assertRequiredEnv("GROQ_API_KEY"));
 });
 
 test("LiveKit URL conversion is correct", () => {
   assert.equal(livekitApiHost("wss://example.livekit.cloud"), "https://example.livekit.cloud");
   assert.equal(livekitApiHost("ws://localhost:7880"), "http://localhost:7880");
+  assert.equal(livekitApiHost("WSS://example.livekit.cloud"), "https://example.livekit.cloud");
+  assert.equal(livekitApiHost("   ws://localhost:7880   "), "http://localhost:7880");
 });

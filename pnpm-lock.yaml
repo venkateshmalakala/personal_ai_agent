@@ -11,6 +11,9 @@ importers:
       '@livekit/agents':
         specifier: ^1.7.1
         version: 1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3)
+      '@livekit/agents-plugin-cartesia':
+        specifier: 1.7.1
+        version: 1.7.1(@livekit/agents@1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3))(@livekit/rtc-node@0.13.34)(zod@4.4.3)
       '@livekit/agents-plugin-openai':
         specifier: ^1.7.1
         version: 1.7.1(@livekit/agents@1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3))(@livekit/rtc-node@0.13.34)(zod@4.4.3)
@@ -208,6 +211,13 @@ packages:
     engines: {node: '>=20.9.0'}
     cpu: [x64]
     os: [win32]
+
+  '@livekit/agents-plugin-cartesia@1.7.1':
+    resolution: {integrity: sha512-AzO6gIeTEJYNPrlF4U5DtoNghHABn5zWFpDl+K/xTSzkS6zJdVcpdz4WZBvPlfBa2Vf5i/WbxRmS1zaHqKFTAw==}
+    peerDependencies:
+      '@livekit/agents': 1.7.1
+      '@livekit/rtc-node': ^0.13.34
+      zod: ^3.25.76 || ^4.1.8
 
   '@livekit/agents-plugin-openai@1.7.1':
     resolution: {integrity: sha512-BCvp+Mx2ZkrxQIAJgbvmr/xtkQWNIPVxY2tLHiMCDo7QhOmho2dgYrZ5Mk9/5VoBROubfdRz6cguKDQcBQHVAg==}
@@ -1471,6 +1481,16 @@ snapshots:
 
   '@img/sharp-win32-x64@0.35.3':
     optional: true
+
+  '@livekit/agents-plugin-cartesia@1.7.1(@livekit/agents@1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3))(@livekit/rtc-node@0.13.34)(zod@4.4.3)':
+    dependencies:
+      '@livekit/agents': 1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3)
+      '@livekit/rtc-node': 0.13.34
+      ws: 8.21.3
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@livekit/agents-plugin-openai@1.7.1(@livekit/agents@1.7.1(@livekit/rtc-node@0.13.34)(@types/node@18.19.130)(typescript@7.0.2)(zod@4.4.3))(@livekit/rtc-node@0.13.34)(zod@4.4.3)':
     dependencies:

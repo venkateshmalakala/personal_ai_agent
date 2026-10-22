@@ -8,6 +8,8 @@ The web client can also start an outbound phone call through Plivo. When the cal
 
 Browser -> Web Server -> LiveKit Room -> Agent Dispatch -> Cloud Agent Worker -> Deepgram -> Groq -> Cartesia -> Speaker
 
+The web dashboard shows outbound call status, answer state, duration, Plivo request details, and the call-room transcript. It receives answer and hangup updates from Plivo webhooks and joins the outbound room as a read-only monitor.
+
 ## Local development
 
 1. Copy `.env.example` to `.env` and fill in the values for your environment.

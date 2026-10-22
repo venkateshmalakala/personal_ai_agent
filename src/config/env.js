@@ -1,7 +1,13 @@
 import "dotenv/config";
 
 const numericEnv = (value, fallback) => {
-  const parsed = Number(value ?? fallback);
+  const raw = typeof value === "string" ? value.trim() : value;
+
+  if (raw === "" || raw === undefined || raw === null) {
+    return fallback;
+  }
+
+  const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
@@ -23,7 +29,11 @@ export const env = {
 };
 
 export function assertRequiredEnv(keys) {
-  const missing = keys.filter((key) => !env[key] || String(env[key]).trim() === "");
+  const requiredKeys = Array.isArray(keys) ? keys : [keys];
+  const missing = requiredKeys.filter((key) => {
+    const value = env[key];
+    return value == null || String(value).trim() === "";
+  });
 
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(", ")}`);
@@ -31,5 +41,16 @@ export function assertRequiredEnv(keys) {
 }
 
 export function livekitApiHost(url) {
-  return url.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
+  if (typeof url !== "string") {
+    return url;
+  }
+
+  const normalized = url.trim();
+  if (!normalized) {
+    return "";
+  }
+
+  return normalized
+    .replace(/^wss:/i, "https:")
+    .replace(/^ws:/i, "http:");
 }
